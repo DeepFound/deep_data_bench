@@ -20,7 +20,7 @@ with open("README.rst", "rb") as f:
 
 
 setup(
-    name = "cmdline-deep_data_bench",
+    name = "deep_data_bench",
     packages = ["deep_data_bench"],
     entry_points = {
         "console_scripts": ['deep_data_bench = deep_data_bench.deep_data_bench:main']
