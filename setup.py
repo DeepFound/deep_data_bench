@@ -22,6 +22,9 @@ with open("README.rst", "rb") as f:
 setup(
     name = "deep_data_bench",
     packages = ["deep_data_bench"],
+    install_requires=[
+        "MySQLdb",
+    ],
     entry_points = {
         "console_scripts": ['deep_data_bench = deep_data_bench.deep_data_bench:main']
         },
