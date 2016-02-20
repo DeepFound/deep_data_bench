@@ -207,7 +207,7 @@ class PillarReport(object):
 			print '{:<14.4f}'.format(self.totals_per_profile[profile].getAveQueryTime(sql_operation))
 
 	def printFullReport(self):
-		print "3 Pillar Bench Report"
+		print "Deep Data Bench Report"
 		col_len = 15
 		#show = zip(self.__client_stats_per_profile.keys(),self.__client_stats_per_profile.keys())
 		for profile in self.__client_stats_per_profile.keys():

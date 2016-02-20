@@ -872,9 +872,9 @@ class QueryGenerator(multiprocessing.Process):
 	  			row = self.__cur.fetchone()
 			except MySQLdb.Error, e:
 				#self.statistics.processError(e)
-				print self.name + " - An Error occured running query. %s" %e
-				print sql
-				print "----------------------------"
+				#print self.name + " - An Error occured running query. %s" %e
+				#print sql
+				#print "----------------------------"
 				if e[1] == 'MySQL server has gone away':
 					#print self.name + " - An Error occured running query. %s" %e
 					pass
@@ -894,8 +894,8 @@ def isTrue(v):
 	else:
 		return False
 
-if __name__ == '__main__':
-	
+def main():
+
 	config_items = {
 					'mysql_user':			{'value':None}, \
 					'mysql_password':		{'value':None}, \
@@ -942,9 +942,6 @@ if __name__ == '__main__':
 		gen[n].join()
 	print "Done."
 
-else:
-	pass
-	#print "im imported."
-
-
+if __name__ == '__main__':
+	main()
 

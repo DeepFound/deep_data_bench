@@ -26,7 +26,11 @@ setup(
         "MySQL-python",
     ],
     entry_points = {
-        "console_scripts": ['deep_data_bench = deep_data_bench.deep_data_bench:main']
+        "console_scripts": ['deep_data_bench = deep_data_bench.deep_data_bench:main',
+                            'get_meta_data = deep_data_bench.metadata:main',
+                            'report_viewer = deep_data_bench.ReportViewer:main',
+                            'query_generator = deep_data_bench.QueryGenerator:main'
+                            ]
         },
     version = version,
     description = "Python command line application for deep_data_bench.",

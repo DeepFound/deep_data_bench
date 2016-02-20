@@ -370,7 +370,7 @@ class MetaData(object):
 			self.__cur.execute("SET FOREIGN_KEY_CHECKS=0")
 			for table, create_statement in self.create_tables.iteritems():
 				print "Creating table " + table
-				print create_statement
+				#print create_statement
 				self.__cur.execute(create_statement)
 				if engine != None:
 					print "Altering table " + table + " to ENGINE=" + str(engine)
@@ -723,8 +723,7 @@ class ParseSlowQueryFile():
 		print json.dumps(self.query_type_counts, sort_keys=True,indent=4, separators=(',', ': '))
 
 
-if __name__ == '__main__':
-
+def main():
 	config_items = {
 					'mysql_user':			{'value':None}, \
 					'mysql_password':		{'value':None}, \
@@ -762,3 +761,7 @@ if __name__ == '__main__':
 
 	m.load(config_items['mysql_user']['value'], config_items['mysql_password']['value'], config_items['mysql_host']['value'],config_items['mysql_port']['value'],None,config_items['database']['value'],config_items['collect_stats']['value'])
 	m.export_to_stdout()
+
+if __name__ == '__main__':
+	main()
+

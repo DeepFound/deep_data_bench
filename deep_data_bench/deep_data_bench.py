@@ -19,21 +19,21 @@ def main():
 	print("Welcome to Deep Data Bench. version: %s" % __version__)
 	config_items = OrderedDict()
 
-	config_items['source_mysql_user'] 			= {'section':'MySQL',	'value':None, 'default' : 'root'} 
-	config_items['source_mysql_password'] 		= {'section':'MySQL',	'value':None, 'default' : ''}
+	config_items['source_mysql_user'] 			= {'section':'MySQL',	'value':None} 
+	config_items['source_mysql_password'] 		= {'section':'MySQL',	'value':None}
 	config_items['source_mysql_socket'] 		= {'section':'MySQL',	'value':None, 'default' : None}
-	config_items['source_mysql_host'] 			= {'section':'MySQL',	'value':None, 'default' : 'localhost'}
+	config_items['source_mysql_host'] 			= {'section':'MySQL',	'value':None}
 	config_items['source_mysql_port'] 			= {'section':'MySQL',	'value':None, 'default' : 3306}
-	config_items['source_database'] 			= {'section':'MySQL',	'value':None, 'default' : 'test'}
+	config_items['source_database'] 			= {'section':'MySQL',	'value':None}
 	config_items['destination_mysql_user'] 		= {'section':'MySQL',	'value':None}
-	config_items['destination_mysql_password'] 	= {'section':'MySQL',	'value':None, 'default' : ''}
+	config_items['destination_mysql_password'] 	= {'section':'MySQL',	'value':None}
 	config_items['destination_mysql_socket'] 	= {'section':'MySQL',	'value':None, 'default' : None}
 	config_items['destination_mysql_host'] 		= {'section':'MySQL',	'value':None}
 	config_items['destination_mysql_port'] 		= {'section':'MySQL',	'value':None, 'default' : 3306}
 	config_items['destination_database'] 		= {'section':'MySQL',	'value':None}
-	config_items['pillar_durations'] 			= {'section':'Pillar',  'value':None}
+	config_items['pillar_durations'] 			= {'section':'Pillar',  'value':None, 'default' : "60s,60s,60s"}
 	config_items['pillars'] 					= {'section':'Pillar',  'value':None, 'default' : "PureLoad,EvenCRUD,Analytics"}
-	config_items['num_clients'] 				= {'section':'Pillar',  'value':None}
+	config_items['num_clients'] 				= {'section':'Pillar',  'value':None, 'default' : "8,8,8"}
 	config_items['show_stats_frequency'] 		= {'section':'Pillar',  'value':0, 'default':0}
 	config_items['tables'] 						= {'section':'MySQL',   'value':None, 'default':'*'}
 	config_items['collect_stats'] 				= {'section':'MySQL',   'value':None, 'default':False} #TODO: Make this a flag and cleanup metadata.py
@@ -86,7 +86,8 @@ def main():
 				config.add_section(config_items[k]['section'])		
 		
 		for k, v in config_items.iteritems():
-			config.set(v['section'], k, config_items[k]['value'])
+			if config_items[k]['value'] is not None:
+				config.set(v['section'], k, config_items[k]['value'])
 		# Writing our configuration file to
 		with open('my.ini', 'wb') as configfile:
 		    config.write(configfile)
@@ -184,9 +185,11 @@ def main():
 
 			final_report.printFullReport()
 			if config_items['report_name']['value'] == None:
-				f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.path.dirname(os.path.realpath(__file__)) + "/reports/", suffix='.dump', prefix=source_database+'_report')
+				#f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.path.dirname(os.path.realpath(__file__)) + "/reports/", suffix='.dump', prefix=source_database+'_report')
+				f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.getcwd(), suffix='.dump', prefix=source_database+'_report')
 			else:
-				f = open(os.path.dirname(os.path.realpath(__file__)) + "/reports/" + config_items['report_name']['value'] + "_" + str(k) + ".dump",'wb')
+				#f = open(os.path.dirname(os.path.realpath(__file__)) + "/reports/" + config_items['report_name']['value'] + "_" + str(k) + ".dump",'wb')
+				f = open(os.getcwd() + "/" + config_items['report_name']['value'] + "_" + str(k) + ".dump",'wb')
 			pickle.dump(final_report, f)
 			f.close()
 			#report.dumpClientTrendDataPerProfile()

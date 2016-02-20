@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 import pickle
 import sys
-import PillarReport
+from deep_data_bench import PillarReport
 import argparse
 from collections import OrderedDict
 #import pprint
@@ -180,7 +180,7 @@ def printVariableDifferences(dict_of_report_objects):
 			print " "
 	print '.' * (max_column_length * (len(dict_of_variables.keys()) + 1) + ((len(dict_of_variables.keys()) + 1) * 5) -2 )
 
-if __name__ == '__main__':
+def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("report", help="report file on disk")
 	parser.add_argument("--summary", action="store_true", help="print summary report")
@@ -197,6 +197,7 @@ if __name__ == '__main__':
 
 	if len(list_of_report_files) == 1:
 		with open(args.report, "rb") as f:
+			print os.getcwd()
 			obj = pickle.load(f)
 		if args.summary:
 			obj.printFullReport()
@@ -239,6 +240,6 @@ if __name__ == '__main__':
 		if args.slowest_queries:
 			printSlowQueryDifferences(dict_of_report_objects)
 
-
-
+if __name__ == '__main__':
+	main()
 
