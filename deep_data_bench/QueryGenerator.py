@@ -799,7 +799,7 @@ class QueryGenerator(multiprocessing.Process):
 		row 			= None
 		timout_occured 	= False
 		e = None
-		w = None
+		w = []
 		conn1, conn2 = multiprocessing.Pipe(False)
 		subproc = multiprocessing.Process(target=self.do_query, args=(sql, self.__cur, conn2))
 		start = time.time()

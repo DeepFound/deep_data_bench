@@ -197,7 +197,6 @@ def main():
 
 	if len(list_of_report_files) == 1:
 		with open(args.report, "rb") as f:
-			print os.getcwd()
 			obj = pickle.load(f)
 		if args.summary:
 			obj.printFullReport()

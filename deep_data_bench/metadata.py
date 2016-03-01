@@ -127,16 +127,16 @@ class MetaData(object):
 			self.global_options['where_clause_range_chance'] 		= 0
 		elif self.profile == "TRX_CRUD":
 			self.global_options['pre_generate_data'] 				= True
-			self.global_options['extended_insert_size'] 			= 400
-			self.global_options['min_transaction_size'] 			= 10
-			self.global_options['max_transaction_size'] 			= 800
+			self.global_options['extended_insert_size'] 			= 200
+			self.global_options['min_transaction_size'] 			= 5
+			self.global_options['max_transaction_size'] 			= 40
 			self.global_options['rollback_chance'] 					= 20
-			self.global_options['create_savepoint_chance'] 			= 10
-			self.global_options['rollback_to_savepoint_chance']		= 10
-			self.global_options['release_savepoint_chance']			= 10
+			self.global_options['create_savepoint_chance'] 			= 20
+			self.global_options['rollback_to_savepoint_chance']		= 20
+			self.global_options['release_savepoint_chance']			= 20
 			self.global_options['commit_early_chance']				= 20
 			self.global_options['rollback_early_chance']			= 30
-			self.global_options['select_lock_in_share_mode_chance'] = 20
+			self.global_options['select_lock_in_share_mode_chance'] = 30
 		elif self.profile == "EvenCRUD":
 			self.global_options['pre_generate_data']				= True
 			self.global_options['extended_insert_size'] 			= 1

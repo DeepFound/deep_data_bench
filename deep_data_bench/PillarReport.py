@@ -167,6 +167,7 @@ class PillarReport(object):
 		#print "MySQL Variables: "
 		for key, value in self.mysql_variables.iteritems():
 			print str(key) + "," + str(value)
+			
 	
 	def printDatabaseInformation(self):
 		print "Database Information:"
