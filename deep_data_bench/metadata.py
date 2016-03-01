@@ -19,7 +19,7 @@ import sys
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
     	if type(o) is datetime.date or type(o) is datetime.datetime:
-        	return o.isoformat()
+        	return o.strftime('%Y-%m-%d %H:%M:%S.%f')
         if isinstance(o, Decimal):
             return float(o)
         return super(DecimalEncoder, self).default(o)

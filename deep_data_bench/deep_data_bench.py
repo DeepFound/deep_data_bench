@@ -19,12 +19,12 @@ def main():
 	print("Welcome to Deep Data Bench. version: %s" % __version__)
 	config_items = OrderedDict()
 
-	config_items['source_mysql_user'] 			= {'section':'MySQL',	'value':None} 
-	config_items['source_mysql_password'] 		= {'section':'MySQL',	'value':None}
+	config_items['source_mysql_user'] 			= {'section':'MySQL',	'value':None, 'default' : None} 
+	config_items['source_mysql_password'] 		= {'section':'MySQL',	'value':None, 'default' : None}
 	config_items['source_mysql_socket'] 		= {'section':'MySQL',	'value':None, 'default' : None}
-	config_items['source_mysql_host'] 			= {'section':'MySQL',	'value':None}
+	config_items['source_mysql_host'] 			= {'section':'MySQL',	'value':None, 'default' : None}
 	config_items['source_mysql_port'] 			= {'section':'MySQL',	'value':None, 'default' : 3306}
-	config_items['source_database'] 			= {'section':'MySQL',	'value':None}
+	config_items['source_database'] 			= {'section':'MySQL',	'value':None, 'default' : None}
 	config_items['destination_mysql_user'] 		= {'section':'MySQL',	'value':None}
 	config_items['destination_mysql_password'] 	= {'section':'MySQL',	'value':None}
 	config_items['destination_mysql_socket'] 	= {'section':'MySQL',	'value':None, 'default' : None}
@@ -39,7 +39,6 @@ def main():
 	config_items['collect_stats'] 				= {'section':'MySQL',   'value':None, 'default':False} #TODO: Make this a flag and cleanup metadata.py
 	config_items['retain_destination_database'] = {'section':'MySQL',   'value':None, 'default':False} #TODO: Make this a flag
 	config_items['write_sql_to_disk'] 			= {'section':'Pillar',   'value':None, 'default':False} #TODO: Make this a flag
-	config_items['pre_generate_data'] 			= {'section':'Pillar',  'value':None, 'default':False}
 	config_items['repeat_x_times'] 				= {'section':'Pillar',  'value':1, 'default':1}
 	config_items['report_name'] 				= {'section':'Pillar',  'value':None, 'default':None}
 	config_items['destination_mysql_engine'] 	= {'section':'MySQL',   'value':None, 'default':None}
@@ -96,13 +95,19 @@ def main():
 
 	profiles_to_run = config_items['pillars']['value'].split(",")
 	pillar_durations = config_items['pillar_durations']['value'].split(",")
-	source_databases = config_items['source_database']['value'].split(",")
+
+	if config_items['source_database']['value'] is not None:
+		source_databases = config_items['source_database']['value'].split(",")
+	else:
+		source_databases = ['placeholder']
+	
 	destination_databases = config_items['destination_database']['value'].split(",")
 	num_clients = config_items['num_clients']['value'].split(",")
 
-	if not (len(source_databases) == len(destination_databases)):
-		print "the source and destination databases must have the same number of comma separated items."
-		sys.exit(1)
+	if config_items['source_database']['value'] is not None:
+		if not (len(source_databases) == len(destination_databases)):
+			print "the source and destination databases must have the same number of comma separated items."
+			sys.exit(1)
 
 	if not (len(profiles_to_run) == len(pillar_durations) == len(num_clients)):
 		print "pillars, pillar_durations and num_clients must have the same number of comma separated items."
