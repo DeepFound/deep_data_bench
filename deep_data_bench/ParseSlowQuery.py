@@ -21,5 +21,3 @@ if __name__ == '__main__':
 
 		tt = ParseSlowQueryFile(config_items['file']['value'])
 		tt.printQueryTypeCount()
-else:
-	print "ParseSlowQuery is Imported."

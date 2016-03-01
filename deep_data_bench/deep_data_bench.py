@@ -191,7 +191,7 @@ def main():
 			final_report.printFullReport()
 			if config_items['report_name']['value'] == None:
 				#f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.path.dirname(os.path.realpath(__file__)) + "/reports/", suffix='.dump', prefix=source_database+'_report')
-				f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.getcwd(), suffix='.dump', prefix=source_database+'_report')
+				f = tempfile.NamedTemporaryFile(mode='wb', delete=False, dir=os.getcwd(), suffix='.dump', prefix=destination_databases[index] + '_report')
 			else:
 				#f = open(os.path.dirname(os.path.realpath(__file__)) + "/reports/" + config_items['report_name']['value'] + "_" + str(k) + ".dump",'wb')
 				f = open(os.getcwd() + "/" + config_items['report_name']['value'] + "_" + str(k) + ".dump",'wb')
