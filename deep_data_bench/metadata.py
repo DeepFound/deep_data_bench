@@ -17,12 +17,14 @@ import sys
 # workaround for json not encoding Decimal  bug: http://bugs.python.org/issue16535
 # http://stackoverflow.com/questions/1960516/python-json-serialize-a-decimal-object
 class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-    	if type(o) is datetime.date or type(o) is datetime.datetime:
-        	return o.strftime('%Y-%m-%d %H:%M:%S.%f')
-        if isinstance(o, Decimal):
-            return float(o)
-        return super(DecimalEncoder, self).default(o)
+	def default(self, o):
+		if type(o) is datetime.date:
+			return o.strftime('%Y-%m-%d')
+		if type(o) is datetime.datetime:
+			return o.strftime('%Y-%m-%d %H:%M:%S.%f')        
+		if isinstance(o, Decimal):
+			return float(o)
+		return super(DecimalEncoder, self).default(o)
 
 class MetaData(object):
  
@@ -33,8 +35,8 @@ class MetaData(object):
 	date_formats		= {'date' : '%Y-%m-%d', 'datetime' : '%Y-%m-%d %H:%M:%S.%f', 'timestamp' : '%Y-%m-%d %H:%M:%S.%f', 'time' : '%H:%M:%S.%f', 'year' : '%Y'}
 	text_types			= ['char','varchar','tinytext','text','blob','mediumtext','mediumblob','longtext','longblob','enum','set','binary']
 	fixed_data			= {'table1.column2' : ['gg', 'ff', '*']}
+	count 				= 0
 	
-	count = 0
 	def __init__(self, profile = "Random"):
 		self.use_slow_query_data = False
 		self.profile 			= profile
@@ -72,7 +74,7 @@ class MetaData(object):
 		self.global_options['range_max_time_minutes'] 				= 4
 		self.global_options['range_max_year'] 						= 1
 		self.global_options['pre_generate_data'] 					= False
-		self.global_options['scale_factor'] 						= 1
+		self.global_options['scale_factor'] 						= 10
 		self.global_options['select_group_by_chance'] 				= 8
 		self.global_options['select_join_chance']					= 2
 		self.global_options['insert_ignore_chance']					= 6
@@ -306,14 +308,9 @@ class MetaData(object):
 
 	def chooseATable(self):
 
-		#if self.profile != "PureLoad":
-		#	return random.choice(self.what_to_do.keys())
-		#else:
-		#	self.count += 1
-
-		#	if self.count < 10000:
-		#		return random.choice(self.what_to_do.keys())
-		#	else:
+		if self.count < 10000:
+			self.count = self.count + 1
+			return random.choice(self.what_to_do.keys())
 
 		weights = []
 		strings = []

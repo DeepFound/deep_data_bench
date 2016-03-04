@@ -800,57 +800,63 @@ class QueryGenerator(multiprocessing.Process):
 		timout_occured 	= False
 		e = None
 		w = []
-		conn1, conn2 = multiprocessing.Pipe(False)
-		subproc = multiprocessing.Process(target=self.do_query, args=(sql, self.__cur, conn2))
-		start = time.time()
-		subproc.start()
-		
+
 		if self.iterations_instead_of_duration:
-			timeout = None
+			start = time.time()
+			rows_affected,e,w,row = self.do_query(sql, self.__cur, None)
+			end = time.time()
+			execution_time = end - start
 		else:
+
+			conn1, conn2 = multiprocessing.Pipe(False)
+			subproc = multiprocessing.Process(target=self.do_query, args=(sql, self.__cur, conn2))
+			start = time.time()
+			subproc.start()
+			
 			timeout = self._duration - self.getDelta()
 			if timeout < 1.0:
 				timeout = 1.0
-	
-                if conn1.poll(timeout):
-                        rows_affected,e,w,row = conn1.recv()
-	
-		subproc.join(timeout)
-		end = time.time()
-		execution_time = end - start
+		
+			if conn1.poll(timeout):
+				rows_affected,e,w,row = conn1.recv()
+		
+			subproc.join(timeout)
+			end = time.time()
+			execution_time = end - start
 
-		#if conn1.poll():
-		#	rows_affected,e,w,row = conn1.recv()
-		#else:
-		#	print self.name + "nothing in the pipe?"
-		#	if subproc.is_alive():
-		#		print self.name + "pipe empty bc process is alive and isnt done? "
+			#if conn1.poll():
+			#	rows_affected,e,w,row = conn1.recv()
+			#else:
+			#	print self.name + "nothing in the pipe?"
+			#	if subproc.is_alive():
+			#		print self.name + "pipe empty bc process is alive and isnt done? "
 
-		if subproc.is_alive():
-			#print self.name + " - join timed out(" + str(timeout) + "). Killing this query: " + sql
-			timout_occured = True
-			subproc.terminate()
-			self.connect_to_mysql()
-		else:
-			if rows_affected != None:
-				query_type = sql.split(' ', 1)[0]
-				if query_type == 'UPDATE' or query_type == 'DELETE':
-					self.update_min_max_counter += 1
-				if statistics_processing:
-					self.statistics.processQueryInfo(sql,execution_time,self.getDelta(),rows_affected)
-				self.log_query_to_disk(sql)
-			if e != None:
-				self.statistics.processError(e)
-				if e[1] == 'MySQL server has gone away':
-					#lets try to gracefully kill ourself
-					print self.name + " - MySQL server has gone away?  hmm.. Taking Poison Pill..."
-					self.poison_pill = True
-			if len(w) > 0:
-				for t in w:
-					self.statistics.processWarning(str(t.message))
+			if subproc.is_alive():
+				#print self.name + " - join timed out(" + str(timeout) + "). Killing this query: " + sql
+				timout_occured = True
+				subproc.terminate()
+				self.connect_to_mysql()
+				return (row,timout_occured)
+
+		if rows_affected != None:
+			query_type = sql.split(' ', 1)[0]
+			if query_type == 'UPDATE' or query_type == 'DELETE':
+				self.update_min_max_counter += 1
+			if statistics_processing:
 				self.statistics.processQueryInfo(sql,execution_time,self.getDelta(),rows_affected)
-				self.log_query_to_disk(sql)
-				#print "WArning : " + sql
+			self.log_query_to_disk(sql)
+		if e != None:
+			self.statistics.processError(e)
+			if e[1] == 'MySQL server has gone away':
+				#lets try to gracefully kill ourself
+				print self.name + " - MySQL server has gone away?  hmm.. Taking Poison Pill..."
+				self.poison_pill = True
+		if len(w) > 0:
+			for t in w:
+				self.statistics.processWarning(str(t.message))
+			self.statistics.processQueryInfo(sql,execution_time,self.getDelta(),rows_affected)
+			self.log_query_to_disk(sql)
+			#print "WArning : " + sql
 		#print "End: " + sql 
 		return (row,timout_occured)
 
@@ -884,7 +890,11 @@ class QueryGenerator(multiprocessing.Process):
 				print self.name + " - A ProgrammingError occured running query. %s" %e
 				#print sql;
 				#print "----------------end----------------"
-		conn.send((rows_affected,e,w,row))
+		
+		if conn != None:
+			conn.send((rows_affected,e,w,row))
+		else:
+			return (rows_affected,e,w,row)
 
 def isTrue(v):
 	if type(v) == types.BooleanType:
