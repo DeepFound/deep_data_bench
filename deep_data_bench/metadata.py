@@ -306,19 +306,19 @@ class MetaData(object):
 				strings		= self.what_to_do[table]['CRUD'].keys()
 				return strings[self.__grabWeightedIndex(weights)]
 
-	def chooseATable(self):
+	def chooseATable(self,tables):
 
 		if self.count < 10000:
 			self.count = self.count + 1
-			return random.choice(self.what_to_do.keys())
+			return random.choice(tables)
 
 		weights = []
 		strings = []
-		for t in self.what_to_do.keys():
+		for t in tables:
 			strings.append(t)
 			weights.append(self.what_to_do[t]['SIZE'])
 		if sum(weights) == 0:
-			return random.choice(self.what_to_do.keys())
+			return random.choice(tables)
 		return strings[self.__grabWeightedIndex(weights)]
 
 
@@ -521,7 +521,9 @@ class MetaData(object):
 					if min == 0:
 						min = 1
 					max = int(min * 2)
-					
+					if max > item('CHARACTER_MAXIMUM_LENGTH'):
+						max = item('CHARACTER_MAXIMUM_LENGTH')
+
 					the_item = table + "." + item('COLUMN_NAME')
 
 					if item('DATA_TYPE') == "enum" or item('DATA_TYPE') == "set":

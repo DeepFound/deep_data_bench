@@ -110,41 +110,31 @@ class QueryGenerator(multiprocessing.Process):
 		return self.__metadata.what_to_do
 
 	def createQueries(self):
-
-		amt = int(self._duration / len(self.potential_tables)) * 4
-		#amt = int(self._duration)
-
+		#for table_name in self.potential_tables:
+		foundFiles = False
 		for table_name in self.potential_tables:
-
-
-			outfile = os.path.dirname(os.path.realpath(__file__)) + "/data/" + self.name + "." + table_name + "." + str(amt) + "." + str(self.profilefilename)
-			#print outfile
+			outfile = os.path.dirname(os.path.realpath(__file__)) + "/data/" + self.name + "." + table_name + "." + str(self.profilefilename)
 			if os.path.isfile(outfile):
 				#print self.name + " Loading pickled file " + outfile
+				foundFiles = True
 				with open(outfile,'r') as f:
 					self.generated_queries[table_name] = pickle.load(f)
-				continue
+		if foundFiles:
+			return
 
-			for row in range(1,amt):
+		for tt in range(1,int(self._duration * 1.2)):
+			table_name = self.__metadata.chooseATable(self.potential_tables)
+			todo = self.__metadata.findSomethingToDo(table_name)
+			q = self.generateQuery(table_name,todo)
+			if q != None:
+				self.generated_queries[table_name][todo].append(q)
 
-				#if self.where_clause_gen_having_trouble % 10 == 0 and self.where_clause_gen_having_trouble != 0 :
-				#	print "self.where_clause_gen_having_trouble: " + str(self.where_clause_gen_having_trouble)
-
-				#if self.where_clause_gen_trying_desc % 10 == 0 and self.where_clause_gen_trying_desc != 0:	
-				#	print "self.where_clause_gen_trying_desc: " + str(self.where_clause_gen_trying_desc)
-
-				todo = self.__metadata.findSomethingToDo(table_name)
-				q = self.generateQuery(table_name,todo)
-				if q != None:
-					self.generated_queries[table_name][todo].append(q)
-					#print "table: " + str(table_name) + "iteration: " + str(row) + " todo: " + str(todo) 
-				#else:
-				#	print "failed to generate " + str(todo)  + " query for table: " + str(table_name) 
+		for table_name in self.potential_tables:
+			outfile = os.path.dirname(os.path.realpath(__file__)) + "/data/" + self.name + "." + table_name + "." + str(self.profilefilename)
 			with open(outfile,'wb') as f:
 				#print self.name + "Saving pickled file " + outfile
 				pickle.dump(self.generated_queries[table_name], f)
-
-		self.__metadata.pattern_position = 0
+		#self.__metadata.pattern_position = 0
 
 	def getDelta(self):
 		self.delta = time.time() - self.start_time
@@ -197,7 +187,7 @@ class QueryGenerator(multiprocessing.Process):
 
 			if self.__table[0] == '*':
 				#table_name = random.choice(self.__metadata.what_to_do.keys())
-				table_name = self.__metadata.chooseATable()
+				table_name = self.__metadata.chooseATable(self.potential_tables)
 			else:
 				table_name = random.choice(self.__table)
 
@@ -288,17 +278,15 @@ class QueryGenerator(multiprocessing.Process):
 
 		for k,data in enumerate(self.statistics.slowest_queries):
 			if data['sql'].split(' ', 1)[0] == 'SELECT':
-
 				try:
 					self.__cur.execute('explain ' + data['sql'])
-				
 					name_to_index = dict((d[0], i) for i, d in enumerate(self.__cur.description))
 					slow_query_info = self.__cur.fetchall()
 					explain_list = []
 					for row in slow_query_info:
 						explain_info = {}
 						for name,the_index in name_to_index.iteritems():
-							explain_info[name] = slow_query_info[0][the_index]
+							explain_info[name] = row[the_index]
 						explain_list.append(explain_info)
 					data['explain'] = explain_list
 					self.statistics.slowest_queries[k] = data
@@ -540,9 +528,9 @@ class QueryGenerator(multiprocessing.Process):
 
 		if self.__metadata.global_options['select_order_by_chance'] != 0 and random.randint(1,self.__metadata.global_options['select_order_by_chance']) == 1:
 			if do_group_by:
-				sql += " ORDER BY " + ','.join([str(i) for i in new_select_group_by])
+				sql += " ORDER BY " + ','.join([str(i) for i in random.sample(new_select_group_by, random.randint(1,len(new_select_group_by)))])
 			else:
-				sql += " ORDER BY " + ','.join([str(i) for i in colums_to_select])
+				sql += " ORDER BY " + ','.join([str(i) for i in random.sample(colums_to_select,random.randint(1,len(colums_to_select)))])
 		if self.__metadata.global_options['select_limit_size'] != 0:
 			sql += " LIMIT " + str(self.__metadata.global_options['select_limit_size'])
 		if self.__metadata.global_options['select_lock_in_share_mode_chance'] != 0 and random.randint(1,self.__metadata.global_options['select_lock_in_share_mode_chance']) == 1 and self.transaction_size > 1:
@@ -771,10 +759,11 @@ class QueryGenerator(multiprocessing.Process):
 
 	def __initialize_things(self):
 		self.potential_tables = []
+
 		if self.__table[0] == '*':
 			self.potential_tables = self.__metadata.meta_data.keys();
 		else:
-			self.potential_tables = self.__table
+			self.potential_tables.append(self.__table[0])
 
 		for table in self.potential_tables:
 			self.generated_queries[table] = {}

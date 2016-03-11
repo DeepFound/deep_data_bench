@@ -2,41 +2,42 @@
 import pickle
 import sys
 from deep_data_bench import PillarReport
+from PillarReport import printTable
 import argparse
 from collections import OrderedDict
 #import pprint
 import os
+#from prettytable import PrettyTable
 
 def printSlowQueryDifferences(dict_of_report_objects):
-
 	full_list_of_query_info = {}
-
 	for key,report in dict_of_report_objects.iteritems():
 		for item in report.getSlowestQueries():
 			if not key in full_list_of_query_info.keys():
 				full_list_of_query_info[key] = []
 			full_list_of_query_info[key].append(item)
 
-
 	for key, value_list in full_list_of_query_info.iteritems():
+		import pprint
 		for value in value_list:
 			for key2, value_list2 in full_list_of_query_info.iteritems():
 				for value2 in value_list2:
 					if not key == key2:
 						if value['sql'] == value2['sql']:
-							print "-" * 30
-							print value['sql']
-							print key + ": " + str(value['execution_time'])
-							print key2 + ": " + str(value2['execution_time'])
-							for i, explain_row in enumerate(value['explain']):
-								for k,v in explain_row.iteritems():
-									if not value2['explain'][i][k] == v:
-										print key + " -> explain row:" + str(i) + " explain item: " + str(k) + "  value: " + str(v)
-										print key2 + " -> explain row:" + str(i) + " explain item: " + str(k) + "  value: " + str(value2['explain'][i][k]) 
-		#print "key:" + key
-		#for data in value:
-		#	print "===================================================="
-		#	print data
+							print "\n"
+							print "Common query between reports:"
+							print value['sql'] + "\n"
+							print key + " took: " + "{0:.4f}".format(value['execution_time']) + " seconds"
+							print key2 + " took: " + "{0:.4f}".format(value2['execution_time']) + " seconds"
+
+							if len(value['explain']) > 0:
+								value['explain'].sort(key=lambda dic: dic['table'])
+								value2['explain'].sort(key=lambda dic: dic['table'])
+								print "\nExplain for " + key
+								printTable(value['explain'])
+								print "Explain for " + key2
+								printTable(value2['explain'])
+
 
 def printDatabaseDifferences(dict_of_report_objects):
 	print ''

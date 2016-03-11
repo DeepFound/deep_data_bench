@@ -153,7 +153,7 @@ def main():
 				profile_file_list = []
 				for profile in pillar[0].split(" "):
 					m = MetaData(profile)
-					if os.path.isfile(profile):
+					if os.path.isfile(profile.strip()):
 						m.import_from_file(profile)
 						profile_file_list.append(profile)
 					else:

@@ -4,6 +4,7 @@ from collections import OrderedDict
 import pickle
 import sys
 import json
+from prettytable import PrettyTable
 
 class PillarReport(object):	
 	num_tables 		= 0
@@ -125,13 +126,13 @@ class PillarReport(object):
 			slowest_queries.sort(key=lambda dic: dic['execution_time'], reverse=False)
 			print "Profile: " + profile
 			for q in slowest_queries:
-				print "----------------START--------------------"
-				print str(q['execution_time']) + " seconds  "
+				print "\nQuery:"
 				print q['sql']
-				if 'explain' in q.keys():
-					for item in q['explain']:
-						for i,v in item.iteritems():
-							print str(i) + ": " + str(v)
+				print "Took: " + "{0:.4f}".format(q['execution_time']) + " seconds  "
+				if len(q['explain']) > 0:
+					print "Explain:"
+					printTable(q['explain'])
+				#print "\n"
 
 	def getSlowestQueries(self):
 		slowest_queries = []
@@ -244,6 +245,22 @@ class PillarReport(object):
 
 		print json.dumps(data, sort_keys=True,indent=4, separators=(',', ': '))
 
+def printTable(data):
+  """ print a pretty table """
+  from prettytable import PrettyTable
+  column_header_list = data[0].keys()
+  x = PrettyTable()
+  x.field_names = column_header_list
+  for col in column_header_list:
+    x.align[col] = "l"
+  x.align[column_header_list[0]] = "r"
+  x.padding_width = 1
+  for row in data:
+    row_to_add = []
+    for col in column_header_list:
+      row_to_add.append(row[col])
+    x.add_row(row_to_add)
+  print x.get_string()
 
 
 if __name__ == '__main__':
