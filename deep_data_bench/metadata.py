@@ -308,9 +308,9 @@ class MetaData(object):
 
 	def chooseATable(self,tables):
 
-		if self.count < 10000:
-			self.count = self.count + 1
-			return random.choice(tables)
+		#if self.count < 10000:
+		#	self.count = self.count + 1
+		#	return random.choice(tables)
 
 		weights = []
 		strings = []

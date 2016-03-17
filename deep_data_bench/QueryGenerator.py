@@ -122,7 +122,7 @@ class QueryGenerator(multiprocessing.Process):
 		if foundFiles:
 			return
 
-		for tt in range(1,int(self._duration * 1.2)):
+		for tt in range(1,int(self._duration * 2.0)):
 			table_name = self.__metadata.chooseATable(self.potential_tables)
 			todo = self.__metadata.findSomethingToDo(table_name)
 			q = self.generateQuery(table_name,todo)

@@ -129,9 +129,9 @@ def main():
 
 			meta = MetaData(profiles_to_run[0])
 			
-			if os.path.isfile(profiles_to_run[0]):
-				meta.import_from_file(profiles_to_run[0])
-				print "imported " + str(profiles_to_run[0])
+			if os.path.isfile(profiles_to_run[0].split(" ")[0]):
+				meta.import_from_file(profiles_to_run[0].split(" ")[0])
+				print "imported " + str(profiles_to_run[0].split(" ")[0])
 			else:
 				meta.load(config_items['source_mysql_user']['value'], config_items['source_mysql_password']['value'], config_items['source_mysql_host']['value'], int(config_items['source_mysql_port']['value']), config_items['source_mysql_socket']['value'], source_database, False)
 
