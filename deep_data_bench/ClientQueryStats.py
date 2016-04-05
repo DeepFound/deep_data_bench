@@ -99,7 +99,7 @@ class ClientQueryStats(object):
 
 
 		#maintain the slowest 10 queries
-		if len(self.slowest_queries) < 500:
+		if len(self.slowest_queries) < 50:
 			self.slowest_queries.append( {"sql" : sql, "execution_time" : execution_time} )
 			self.slowest_queries.sort(key=lambda dic: dic['execution_time'], reverse=True)
 		else:
