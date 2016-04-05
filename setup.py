@@ -24,6 +24,7 @@ setup(
     packages = ["deep_data_bench"],
     install_requires=[
         "MySQL-python",
+        "prettytable",
     ],
     entry_points = {
         "console_scripts": ['deep_data_bench = deep_data_bench.deep_data_bench:main',
