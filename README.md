@@ -16,7 +16,9 @@ CentOS:
 $ sudo yum install centos-release-SCL
 $ sudo yum install python27
 $ scl enable python27 bash
+
 $ virtualenv --python=python2.7 ~/.venv/deep_data_bench; source ~/.venv/deep_data_bench/bin/activate
+
 (deep_data_bench)$ pip install -e git+https://github.com/DeepInfoSci/deep_data_bench.git#egg=deep_data_bench
 
 
