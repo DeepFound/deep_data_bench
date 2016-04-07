@@ -5,12 +5,13 @@ How to install:
 
 Ubuntu:
 
+$ sudo apt-get update
 $ sudo apt-get install git libmysqlclient-dev python-dev
 $ sudo pip install virtualenv
-
 $ virtualenv --python=python2.7 ~/.venv/deep_data_bench; source ~/.venv/deep_data_bench/bin/activate
 
 (deep_data_bench)$ pip install -e git+https://github.com/DeepInfoSci/deep_data_bench.git#egg=deep_data_bench
+
 
 CentOS:
 $ sudo yum install centos-release-SCL
