@@ -1116,7 +1116,7 @@
         "update_limit_size": 10,
         "update_primary_key_columns": false,
         "where_clause_early_termination_chance": 3,
-        "where_clause_range_chance": 8
+        "where_clause_range_chance": 9
     },
     {
         "customer.c_address": [
